@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:clipToPadding="false"
+        >
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Connect"
+            android:id="@+id/send"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="3dp"
+            android:width="200dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:elevation="15dp"
+            />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/txtConnectStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnConnect"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Status : Not connected"
+        android:textSize="12dp"
+        android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
