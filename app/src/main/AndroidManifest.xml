@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.jirka.bunytest_v2">
+    package="com.example.jirka.AUOManagement">
 
     <application
         android:allowBackup="true"
@@ -10,11 +10,11 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name=".RMQService"
+            android:name="com.example.jirka.AUOManagement.RMQService"
             android:exported="false"/>
 
        <activity
-            android:name="com.example.jirka.bunytest_v2.Splash"
+            android:name="com.example.jirka.AUOManagement.Splash"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,14 +23,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.jirka.bunytest_v2.MainActivity"
+            android:name="com.example.jirka.AUOManagement.MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.jirka.bunytest_v2.Menu">
+            android:name="com.example.jirka.AUOManagement.Menu">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
