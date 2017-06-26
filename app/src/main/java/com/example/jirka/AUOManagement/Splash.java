@@ -1,12 +1,15 @@
 package com.example.jirka.AUOManagement;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,12 +18,35 @@ public class Splash extends AppCompatActivity {
     RMQService mService;
     boolean mBound = false;
 
+    private static final String ACTION_STRING_SERVICE = "ToService";
+    private static final String ACTION_STRING_ACTIVITY = "ToActivity";
+
+    private void sendBroadcast() {
+        Intent new_intent = new Intent();
+        new_intent.setAction(ACTION_STRING_SERVICE);
+        sendBroadcast(new_intent);
+    }
+
+
+    private BroadcastReceiver activityReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(getApplicationContext(), "received message in activity..!", Toast.LENGTH_SHORT).show();
+        }
+    };
 
    @Override
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
+       if (activityReceiver != null) {
+            //Create an intent filter to listen to the broadcast sent with the action "ACTION_STRING_ACTIVITY"
+                       IntentFilter intentFilter = new IntentFilter(ACTION_STRING_ACTIVITY);
+            //Map the intent filter to the receiver
+           registerReceiver(activityReceiver, intentFilter);
+       }
     }
 
     @Override
@@ -41,19 +67,6 @@ public class Splash extends AppCompatActivity {
         }
     }
 
-    /** Called when a button is clicked (the button in the layout file attaches to
-     * this method with the android:onClick attribute) */
-    public void onButtonClick(View v) {
-        if (mBound) {
-            // Call a method from the LocalService.
-            // However, if this call were something that might hang, then this request should
-            // occur in a separate thread to avoid slowing down the activity performance.
-            int num = mService.getRandomNumber();
-            Toast.makeText(this, "number: " + num, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -64,6 +77,8 @@ public class Splash extends AppCompatActivity {
             RMQService.LocalBinder binder = (RMQService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
+            Toast.makeText(Splash.super.getApplication(), "Service connected!",
+                    Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -71,4 +86,12 @@ public class Splash extends AppCompatActivity {
             mBound = false;
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Service", "onDestroy");
+        // Unregister the receiver
+        unregisterReceiver(activityReceiver);
+    }
 }

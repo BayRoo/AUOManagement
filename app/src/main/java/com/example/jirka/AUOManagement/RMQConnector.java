@@ -55,6 +55,11 @@ public class RMQConnector {
 
     }
 
+    public void closeConnection(){
+        publishThread.interrupt();
+        publishThread = null;
+    }
+
     public boolean getState(){
         return cState;
     }

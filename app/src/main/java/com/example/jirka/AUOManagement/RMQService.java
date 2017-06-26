@@ -1,7 +1,10 @@
 package com.example.jirka.AUOManagement;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -22,6 +25,26 @@ public class RMQService extends Service {
         // Conection to RabbitMQ provider
         private RMQConnector connector;
 
+        private static final String ACTION_STRING_SERVICE = "ToService";
+        private static final String ACTION_STRING_ACTIVITY = "ToActivity";
+
+        private void sendBroadcast() {
+            Intent new_intent = new Intent();
+            new_intent.setAction(ACTION_STRING_ACTIVITY);
+            sendBroadcast(new_intent);
+        }
+
+        private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(getApplicationContext(), "received message in service..!", Toast.LENGTH_SHORT).show();
+                Log.d("Service", "Sending broadcast to activity");
+                sendBroadcast();
+            }
+        };
+
+
 
         /**
          * Class used for the client Binder.  Because we know this service always
@@ -40,9 +63,9 @@ public class RMQService extends Service {
         }
 
         /** method for clients */
-        public int getRandomNumber() {
+        /*public int getRandomNumber() {
             return mGenerator.nextInt(100);
-        }
+        }*/
 
         @Override
         public void onCreate() {
@@ -53,6 +76,13 @@ public class RMQService extends Service {
             HandlerThread thread = new HandlerThread("ServiceStartArguments",
                     android.os.Process.THREAD_PRIORITY_BACKGROUND);
             thread.start();
+
+            if (serviceReceiver != null) {
+                //Create an intent filter to listen to the broadcast sent with the action "ACTION_STRING_SERVICE"
+                                IntentFilter intentFilter = new IntentFilter(ACTION_STRING_SERVICE);
+                //Map the intent filter to the receiver
+                registerReceiver(serviceReceiver, intentFilter);
+            }
             //Connecting to RabbitMQ provider
             connector = new RMQConnector();
             Log.d("LOG","RMQService created!");
@@ -61,6 +91,8 @@ public class RMQService extends Service {
 
         @Override
         public void onDestroy() {
+            connector.closeConnection();
+            unregisterReceiver(serviceReceiver);
             Toast.makeText(this, "Service done", Toast.LENGTH_SHORT).show();
         }
 
