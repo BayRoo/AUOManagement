@@ -17,20 +17,30 @@ import java.util.Random;
  * Created by auo on 6/20/2017.
  */
 
-public class RMQService extends Service {
+public class RMQService extends Service implements ConnectionEvent{
         // Binder given to clients
-        private final IBinder mBinder = new LocalBinder();
+        private final IBinder mBinder;
         // Random number generator
-        private final Random mGenerator = new Random();
+        private final Random mGenerator;
+
+        private ConnectionListenner lst;
         // Conection to RabbitMQ provider
         private RMQConnector connector;
+
+        public RMQService(){
+            mBinder = new LocalBinder();
+            mGenerator = new Random();
+            lst = new ConnectionListenner(this);
+        }
+
 
         private static final String ACTION_STRING_SERVICE = "ToService";
         private static final String ACTION_STRING_ACTIVITY = "ToActivity";
 
-        private void sendBroadcast() {
+        private void sendBroadcast(String mess) {
             Intent new_intent = new Intent();
             new_intent.setAction(ACTION_STRING_ACTIVITY);
+            new_intent.putExtra("data",mess);
             sendBroadcast(new_intent);
         }
 
@@ -39,14 +49,20 @@ public class RMQService extends Service {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Toast.makeText(getApplicationContext(), "received message in service..!", Toast.LENGTH_SHORT).show();
-                Log.d("Service", "Sending broadcast to activity");
-                sendBroadcast();
             }
         };
+        //Listenning for OK events
+        public void callbackOKCall() {
+            sendBroadcast("OK");
+        }
+        //Listenning for NG events
+        public void callbackNGCall() {
+            sendBroadcast("NG");
+        }
 
 
 
-        /**
+    /**
          * Class used for the client Binder.  Because we know this service always
          * runs in the same process as its clients, we don't need to deal with IPC.
          */
@@ -79,13 +95,14 @@ public class RMQService extends Service {
 
             if (serviceReceiver != null) {
                 //Create an intent filter to listen to the broadcast sent with the action "ACTION_STRING_SERVICE"
-                                IntentFilter intentFilter = new IntentFilter(ACTION_STRING_SERVICE);
+                IntentFilter intentFilter = new IntentFilter(ACTION_STRING_SERVICE);
                 //Map the intent filter to the receiver
                 registerReceiver(serviceReceiver, intentFilter);
             }
             //Connecting to RabbitMQ provider
-            connector = new RMQConnector();
+            connector = new RMQConnector(lst);
             Log.d("LOG","RMQService created!");
+
         }
 
 

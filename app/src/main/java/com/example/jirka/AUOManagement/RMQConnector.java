@@ -20,9 +20,9 @@ public class RMQConnector {
     private Thread publishThread;
     private Connection connection = null;
     private Channel ch;
-    private volatile boolean cState;
-    public RMQConnector(){
-        cState = false;
+    private ConnectionListenner lst;
+    public RMQConnector(ConnectionListenner listener){
+        this.lst = listener;
         createConnection();
     }
 
@@ -42,11 +42,13 @@ public class RMQConnector {
                     //name,type,durable,auto-delete,internal,mapobject(null)
                     ch.exchangeDeclare("testing","topic",true,true,false,null);
                     Log.d("LOG","Connection established");
-                    cState = true;
+                    lst.connectionEstablished();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    lst.connectionFailed();
                 } catch (TimeoutException e) {
                     e.printStackTrace();
+                    lst.connectionFailed();
                 }
                 Log.d("LOG", String.valueOf(connection));
             }
@@ -60,9 +62,9 @@ public class RMQConnector {
         publishThread = null;
     }
 
-    public boolean getState(){
+    /*public boolean getState(){
         return cState;
-    }
+    }*/
 
 
     public void publishToAMQP()

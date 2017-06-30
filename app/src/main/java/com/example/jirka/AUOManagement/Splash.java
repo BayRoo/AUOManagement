@@ -32,7 +32,8 @@ public class Splash extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(getApplicationContext(), "received message in activity..!", Toast.LENGTH_SHORT).show();
+            String data = intent.getStringExtra("data");
+            Toast.makeText(getApplicationContext(), "Connection is: "+data, Toast.LENGTH_SHORT).show();
         }
     };
 
